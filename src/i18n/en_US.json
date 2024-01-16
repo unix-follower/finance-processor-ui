@@ -1,0 +1,11 @@
+{
+  "predictionTable": {
+    "header": {
+      "ticker": "Ticker",
+      "openRangeAt": "Open range at",
+      "closedRangeAt": "Closed range at",
+      "predictionAt": "Prediction at",
+      "pricePrediction": "Price prediction"
+    }
+  }
+}

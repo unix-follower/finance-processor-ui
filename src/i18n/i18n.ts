@@ -8,10 +8,9 @@ const resources = {
   },
 }
 
-i18n.use(initReactI18next)
-  .init({
-    resources,
-    lng: "en",
-  })
+i18n.use(initReactI18next).init({
+  resources,
+  lng: "en",
+})
 
 export default i18n

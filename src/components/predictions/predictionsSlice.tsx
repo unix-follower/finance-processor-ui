@@ -44,7 +44,8 @@ export const predictionsSlice = createSlice({
   },
 })
 
-export const getPredictions = (state: AppState) => state.predictionState.predictions
+export const getPredictions = (state: AppState) =>
+  state.predictionState.predictions
 
 export const { setPredictions } = predictionsSlice.actions
 

@@ -7,5 +7,17 @@
       "predictionAt": "Prediction at",
       "pricePrediction": "Price prediction"
     }
+  },
+  "predictionsPage": {
+    "searchModeSelect": {
+      "label": "Search mode",
+      "values": {
+        "all": "All",
+        "range": "Range",
+        "reverseRange": "Reverse range",
+        "reverseAll": "Reverse all"
+      }
+    },
+    "searchButtonText": "Search"
   }
 }

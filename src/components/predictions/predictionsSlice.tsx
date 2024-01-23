@@ -1,29 +1,50 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import type { AppState } from "@/store"
+import type GetPredictionsParams from "@/finProcessor/model/GetPredictionsParams"
+import type GetPredictionByTickerParams from "@/finProcessor/model/GetPredictionsByTickerParams"
 import type StockPricePredictionResponse from "@/finProcessor/model/StockPricePredictionResponse"
 import FinProcessorError from "@/finProcessor/error/FinProcessorError"
 import {
-  FetchPredictionsParams,
   fetchPredictions,
+  fetchPredictionsByTicker,
 } from "@/finProcessor/finProcessorClient"
+import ErrorCode from "@/finProcessor/error/ErrorCode"
 
-export const fetchPredictionsThunk = createAsyncThunk(
-  "predictions/fetchPredictionsAsyncThunk",
-  async (params: FetchPredictionsParams, { rejectWithValue }) => {
-    try {
-      return await fetchPredictions(params)
-    } catch (error) {
-      if (error instanceof FinProcessorError) {
-        return rejectWithValue(error.errorCode)
-      }
-      return rejectWithValue(error)
+async function executeCatching<T>(
+  params: any,
+  rejectWithValue: any,
+  fn: (params: any) => Promise<T>,
+) {
+  try {
+    return await fn(params)
+  } catch (error) {
+    let errorCode = ErrorCode.UNKNOWN
+    if (error instanceof FinProcessorError) {
+      errorCode = error.errorCode
     }
-  },
+    const errorResponse = {
+      errorCode,
+    }
+    return rejectWithValue(JSON.stringify(errorResponse))
+  }
+}
+
+export const fetchPredictionsAsyncThunk = createAsyncThunk(
+  "predictions/fetchPredictionsAsyncThunk",
+  async (params: GetPredictionsParams, { rejectWithValue }) =>
+    executeCatching(params, rejectWithValue, fetchPredictions),
+)
+
+export const fetchPredictionsByTickerAsyncThunk = createAsyncThunk(
+  "predictions/fetchPredictionByTickerAsyncThunk",
+  async (params: GetPredictionByTickerParams, { rejectWithValue }) =>
+    executeCatching(params, rejectWithValue, fetchPredictionsByTicker),
 )
 
 interface PredictionsState {
   predictions: Array<StockPricePredictionResponse>
+  error?: string | undefined | null
 }
 
 const initialState: PredictionsState = {
@@ -39,13 +60,17 @@ export const predictionsSlice = createSlice({
       action: PayloadAction<Array<StockPricePredictionResponse>>,
     ) => {
       const payload = action.payload
-      state.predictions = payload
+      if (typeof payload === "string") {
+        state.error = payload as string
+      } else {
+        state.error = undefined
+        state.predictions = payload
+      }
     },
   },
 })
 
-export const getPredictions = (state: AppState) =>
-  state.predictionState.predictions
+export const getPredictionState = (state: AppState) => state.predictionState
 
 export const { setPredictions } = predictionsSlice.actions
 

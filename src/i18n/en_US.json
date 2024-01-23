@@ -1,23 +1,35 @@
 {
-  "predictionTable": {
-    "header": {
-      "ticker": "Ticker",
-      "openRangeAt": "Open range at",
-      "closedRangeAt": "Closed range at",
-      "predictionAt": "Prediction at",
-      "pricePrediction": "Price prediction"
-    }
-  },
   "predictionsPage": {
-    "searchModeSelect": {
-      "label": "Search mode",
-      "values": {
-        "all": "All",
-        "range": "Range",
-        "reverseRange": "Reverse range",
-        "reverseAll": "Reverse all"
-      }
+    "fetchPredictionsErrorAlertMessage": "Failed to fetch data from the server.",
+    "accordion": {
+      "advancedSearch": "Advanced search",
+      "searchByTicker": "Search by ticker",
+      "searchByTickerTextInputLabel": "Ticker"
     },
-    "searchButtonText": "Search"
+    "predictionTable": {
+      "header": {
+        "ticker": "Ticker",
+        "openRangeAt": "Open range at",
+        "closedRangeAt": "Closed range at",
+        "predictionAt": "Prediction at",
+        "pricePrediction": "Price prediction"
+      },
+      "noRowsLabel": "No data found"
+    },
+    "advancedSearch": {
+      "searchModeSelect": {
+        "label": "Search mode",
+        "values": {
+          "all": "All",
+          "range": "Range",
+          "reverseRange": "Reverse range",
+          "reverseAll": "Reverse all"
+        }
+      },
+      "searchFromLabel": "From",
+      "searchToLabel": "To",
+      "searchPrefixLabel": "Prefix scan",
+      "searchButtonText": "Search"
+    }
   }
 }

@@ -1,0 +1,26 @@
+.search-by-ticker-box {
+  display: flex;
+  flex-direction: row;
+  margin: 1px;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#search-by-ticker {
+  height: 5px;
+}
+
+.search-by-ticker-box .search-button {
+  width: 5px;
+  margin-left: 15px;
+}
+
+#search-by-ticker-label {
+  line-height: inherit;
+}
+
+.search-by-ticker-box .search-ticker-invalid fieldset {
+  border-color: red;
+  border-width: 1px;
+}

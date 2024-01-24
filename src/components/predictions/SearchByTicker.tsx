@@ -57,10 +57,7 @@ export default function SearchByTicker({ loading, setLoadingFn }: Props) {
     params: GetPredictionsByTickerParams,
   ) {
     const resp = await dispatch(fetchPredictionsByTickerAsyncThunk(params))
-
-    const predictionListResponse =
-      resp.payload as StockPricePredictionResponse[]
-    dispatch(setPredictions(predictionListResponse))
+    dispatch(setPredictions(resp.payload))
   }
 
   function handleOnChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {

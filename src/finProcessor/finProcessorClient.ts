@@ -10,11 +10,17 @@ if (!finProcessorUrl) {
   throw new Error("env variable NEXT_PUBLIC_FIN_PROCESSOR_URL is not set")
 }
 
+const NOT_FOUND_HTTP_STATUS_CODE = 404
+
 async function executeCatching(fn: () => Promise<Response>) {
   try {
     const response = await fn()
     if (!response.ok) {
-      throw new FinProcessorError(ErrorCode.UNKNOWN, response)
+      let errorCode = ErrorCode.UNKNOWN
+      if (response.status === NOT_FOUND_HTTP_STATUS_CODE) {
+        errorCode = ErrorCode.NOT_FOUND
+      }
+      throw new FinProcessorError(errorCode, response)
     }
     return response.json()
   } catch (error) {
@@ -88,9 +94,6 @@ export async function fetchPredictionsByTicker({
     const params = new URLSearchParams(paramsObject)
     url = `${url}?${params}`
   }
-  const apiCall = async () => {
-    const response = await fetch(url, options)
-    return response
-  }
+  const apiCall = async () => fetch(url, options)
   return executeCatching(apiCall)
 }

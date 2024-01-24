@@ -57,14 +57,21 @@ export const predictionsSlice = createSlice({
   reducers: {
     setPredictions: (
       state,
-      action: PayloadAction<Array<StockPricePredictionResponse>>,
+      action: PayloadAction<
+        | Array<StockPricePredictionResponse>
+        | StockPricePredictionResponse
+        | string
+      >,
     ) => {
       const payload = action.payload
       if (typeof payload === "string") {
         state.error = payload as string
-      } else {
+      } else if (Array.isArray(payload)) {
         state.error = undefined
         state.predictions = payload
+      } else {
+        state.error = undefined
+        state.predictions = [payload]
       }
     },
   },

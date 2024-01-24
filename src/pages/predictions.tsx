@@ -20,6 +20,9 @@ import {
 } from "@/components/predictions/predictionsSlice"
 import SearchByTicker from "@/components/predictions/SearchByTicker"
 import "./predictions.css"
+import ErrorCode from "@/finProcessor/error/ErrorCode"
+
+const errorSkipList = [ErrorCode.NOT_FOUND]
 
 const PredictionsPage: NextPage = () => {
   const dispatch = useAppDispatch()
@@ -56,9 +59,18 @@ const PredictionsPage: NextPage = () => {
     loadPredictions(params)
   }, [])
 
+  function isShowAlertOnServerError() {
+    let isError = false
+    if (predictionState.error) {
+      const errorDetails = JSON.parse(predictionState.error)
+      isError = !errorSkipList.includes(errorDetails.errorCode)
+    }
+    return isError
+  }
+
   return (
     <div>
-      {predictionState.error && (
+      {isShowAlertOnServerError() && (
         <Alert variant="filled" severity="error">
           {t("predictionsPage.fetchPredictionsErrorAlertMessage")}
         </Alert>

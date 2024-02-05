@@ -12,12 +12,25 @@ if (!finProcessorUrl) {
 
 const NOT_FOUND_HTTP_STATUS_CODE = 404
 
+function translateErrorCode(code: number) {
+  switch (code) {
+    case 1:
+      return ErrorCode.NOT_FOUND
+    default:
+      return ErrorCode.UNKNOWN
+  }
+}
+
 async function executeCatching(fn: () => Promise<Response>) {
   try {
     const response = await fn()
     if (!response.ok) {
       let errorCode = ErrorCode.UNKNOWN
-      if (response.status === NOT_FOUND_HTTP_STATUS_CODE) {
+      const responseBody = await response.json()
+      const responseBodyErrorCode = responseBody["errorCode"]
+      if (responseBodyErrorCode) {
+        errorCode = translateErrorCode(responseBodyErrorCode)
+      } else if (response.status === NOT_FOUND_HTTP_STATUS_CODE) {
         errorCode = ErrorCode.NOT_FOUND
       }
       throw new FinProcessorError(errorCode, response)
@@ -47,11 +60,13 @@ export async function fetchPredictions({
   }
   const paramsObject: any = {}
 
-  if (mode) {
-    paramsObject.mode = mode
+  let predictionsUrl = `${finProcessorUrl}/api/v1/predictions`
 
+  if (mode) {
+    paramsObject.mode = mode.toString()
     switch (mode) {
-      case (SearchMode.RANGE, SearchMode.REVERSE_RANGE):
+      case SearchMode.RANGE:
+      case SearchMode.REVERSE_RANGE:
         if (from) {
           paramsObject.from = from
         }
@@ -65,13 +80,11 @@ export async function fetchPredictions({
           paramsObject.prefix = prefix
         }
     }
-  }
 
-  let predictionsUrl = `${finProcessorUrl}/api/v1/predictions`
-  if (mode) {
     const params = new URLSearchParams(paramsObject)
     predictionsUrl = `${predictionsUrl}?${params}`
   }
+
   const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }
@@ -95,5 +108,29 @@ export async function fetchPredictionsByTicker({
     url = `${url}?${params}`
   }
   const apiCall = async () => fetch(url, options)
+  return executeCatching(apiCall)
+}
+
+export async function fetchTopPredictions(): Promise<
+  StockPricePredictionResponse[]
+> {
+  const options = {
+    method: "GET",
+  }
+
+  let predictionsUrl = `${finProcessorUrl}/api/v1/top/predictions`
+  const apiCall = async () => fetch(predictionsUrl, options)
+  return executeCatching(apiCall)
+}
+
+export async function fetchLossPredictions(): Promise<
+  StockPricePredictionResponse[]
+> {
+  const options = {
+    method: "GET",
+  }
+
+  let predictionsUrl = `${finProcessorUrl}/api/v1/loss/predictions`
+  const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }

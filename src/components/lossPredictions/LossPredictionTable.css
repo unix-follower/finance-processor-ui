@@ -1,0 +1,10 @@
+.prediction-table {
+  padding-top: 5px;
+  height: 50%;
+  width: 50%;
+}
+
+.MuiDataGrid-virtualScroller {
+  min-width: 200px;
+  min-height: 200px;
+}

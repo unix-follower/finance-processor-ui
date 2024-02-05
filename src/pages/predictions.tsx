@@ -1,7 +1,6 @@
 import React from "react"
 import { useTranslation } from "react-i18next"
 import type { NextPage } from "next"
-import type StockPricePredictionResponse from "@/finProcessor/model/StockPricePredictionResponse"
 import PredictionTable from "@/components/predictions/PredictionTable"
 import AdvancedSearch from "@/components/predictions/AdvancedSearch"
 import type GetPredictionsParams from "@/finProcessor/model/GetPredictionsParams"
@@ -14,8 +13,9 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import Alert from "@mui/material/Alert"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import {
+  PredictionStateUpdateAction,
   fetchPredictionsAsyncThunk,
-  setPredictions as setPredictionsAction,
+  setState,
   getPredictionState,
 } from "@/components/predictions/predictionsSlice"
 import SearchByTicker from "@/components/predictions/SearchByTicker"
@@ -35,11 +35,8 @@ const PredictionsPage: NextPage = () => {
   const predictionState = useAppSelector(getPredictionState)
 
   async function fetchPredictions(params: GetPredictionsParams) {
-    const resp = await dispatch(fetchPredictionsAsyncThunk(params))
-
-    const predictionListResponse =
-      resp.payload as StockPricePredictionResponse[]
-    dispatch(setPredictionsAction(predictionListResponse))
+    const response = await dispatch(fetchPredictionsAsyncThunk(params))
+    dispatch(setState(response.payload as PredictionStateUpdateAction))
   }
 
   function loadPredictions(params: GetPredictionsParams) {
@@ -62,7 +59,7 @@ const PredictionsPage: NextPage = () => {
   function isShowAlertOnServerError() {
     let isError = false
     if (predictionState.error) {
-      const errorDetails = JSON.parse(predictionState.error)
+      const errorDetails = predictionState.error
       isError = !errorSkipList.includes(errorDetails.errorCode)
     }
     return isError
@@ -72,7 +69,7 @@ const PredictionsPage: NextPage = () => {
     <div>
       {isShowAlertOnServerError() && (
         <Alert variant="filled" severity="error">
-          {t("predictionsPage.fetchPredictionsErrorAlertMessage")}
+          {t("fetchDataErrorAlertMessage")}
         </Alert>
       )}
       <Accordion

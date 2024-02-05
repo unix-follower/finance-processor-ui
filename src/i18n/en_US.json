@@ -1,6 +1,13 @@
 {
+  "fetchDataErrorAlertMessage": "Failed to fetch data from the server.",
+  "predictionTable": {
+    "header": {
+      "ticker": "Ticker",
+      "pricePrediction": "Price prediction"
+    },
+    "noRowsLabel": "No data found"
+  },
   "predictionsPage": {
-    "fetchPredictionsErrorAlertMessage": "Failed to fetch data from the server.",
     "accordion": {
       "advancedSearch": "Advanced search",
       "searchByTicker": "Search by ticker",
@@ -8,13 +15,10 @@
     },
     "predictionTable": {
       "header": {
-        "ticker": "Ticker",
         "openRangeAt": "Open range at",
         "closedRangeAt": "Closed range at",
-        "predictionAt": "Prediction at",
-        "pricePrediction": "Price prediction"
-      },
-      "noRowsLabel": "No data found"
+        "predictionAt": "Prediction at"
+      }
     },
     "advancedSearch": {
       "searchModeSelect": {

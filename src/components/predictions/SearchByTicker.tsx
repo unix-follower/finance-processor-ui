@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next"
 import Box from "@mui/material/Box"
 import TextField from "@mui/material/TextField"
 import {
-  setPredictions,
+  PredictionStateUpdateAction,
+  setState,
   fetchPredictionsByTickerAsyncThunk,
 } from "@/components/predictions/predictionsSlice"
 import { useAppDispatch } from "@/hooks"
 import type GetPredictionsByTickerParams from "@/finProcessor/model/GetPredictionsByTickerParams"
-import type StockPricePredictionResponse from "@/finProcessor/model/StockPricePredictionResponse"
 import SearchButton from "./SearchButton"
 import "./SearchByTicker.css"
 
@@ -56,8 +56,8 @@ export default function SearchByTicker({ loading, setLoadingFn }: Props) {
   async function fetchPredictionsByTicker(
     params: GetPredictionsByTickerParams,
   ) {
-    const resp = await dispatch(fetchPredictionsByTickerAsyncThunk(params))
-    dispatch(setPredictions(resp.payload))
+    const response = await dispatch(fetchPredictionsByTickerAsyncThunk(params))
+    dispatch(setState(response.payload as PredictionStateUpdateAction))
   }
 
   function handleOnChangeEvent(event: React.ChangeEvent<HTMLInputElement>) {

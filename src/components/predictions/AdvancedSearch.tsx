@@ -6,7 +6,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
-import SearchMode from "@/finProcessor/model/SearchMode"
+import SearchMode, { parseSearchMode } from "@/finProcessor/model/SearchMode"
 import GetPredictionsParams from "@/finProcessor/model/GetPredictionsParams"
 import "./AdvancedSearch.css"
 import SearchButton from "./SearchButton"
@@ -122,7 +122,8 @@ export default function AdvancedSearch({ loading, executeSearchFn }: Props) {
 
   function handleSelectOnChange(event: SelectChangeEvent) {
     resetInvalidPerfixScanCss()
-    setSearchMode(event.target.value as SearchMode)
+    const mode = parseSearchMode(event.target.value)
+    setSearchMode(mode)
   }
 
   return (

@@ -26,6 +26,9 @@ jobs:
   run-sanity-check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
       - name: Setup
         uses: ./.github/actions/setup
 

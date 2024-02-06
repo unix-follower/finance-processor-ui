@@ -3,8 +3,8 @@ description: Setup Node.js environment
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v4.1.1
-    - uses: actions/setup-node@v4.0.1
+    - name: Install Node.js
+      uses: actions/setup-node@v4.0.1
       with:
         node-version-file: package.json
     - name: npm cache

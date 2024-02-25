@@ -20,19 +20,19 @@ const LossPredictionsPage: NextPage = () => {
 
   const predictionState = useAppSelector(getPredictionState)
 
-  async function fetchPredictions() {
-    const response = await dispatch(fetchLossPredictionsAsyncThunk())
-    dispatch(setState(response.payload as PredictionStateUpdateAction))
-  }
-
-  function loadPredictions() {
-    setLoading(true)
-    return fetchPredictions().finally(() => setLoading(false))
-  }
-
   React.useEffect(() => {
+    async function fetchPredictions() {
+      const response = await dispatch(fetchLossPredictionsAsyncThunk())
+      dispatch(setState(response.payload as PredictionStateUpdateAction))
+    }
+
+    function loadPredictions() {
+      setLoading(true)
+      return fetchPredictions().finally(() => setLoading(false))
+    }
+
     loadPredictions()
-  }, [])
+  }, [dispatch])
 
   function isShowAlertOnServerError() {
     return predictionState.error

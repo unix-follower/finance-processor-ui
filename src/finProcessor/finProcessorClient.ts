@@ -58,30 +58,30 @@ export async function fetchPredictions({
   const options = {
     method: "GET",
   }
-  const paramsObject: any = {}
+  let paramsString: string | undefined
 
   let predictionsUrl = `${finProcessorUrl}/api/v1/predictions`
 
   if (mode) {
-    paramsObject.mode = mode.toString()
+    paramsString = `mode=${mode.toString()}`
     switch (mode) {
       case SearchMode.RANGE:
       case SearchMode.REVERSE_RANGE:
         if (from) {
-          paramsObject.from = from
+          paramsString += `&from=${from}`
         }
 
         if (to) {
-          paramsObject.to = to
+          paramsString += `&to=${to}`
         }
         break
       case SearchMode.PREFIX_SCAN:
         if (prefix) {
-          paramsObject.prefix = prefix
+          paramsString += `&prefix=${prefix}`
         }
     }
 
-    const params = new URLSearchParams(paramsObject)
+    const params = new URLSearchParams(paramsString)
     predictionsUrl = `${predictionsUrl}?${params}`
   }
 
@@ -93,19 +93,15 @@ export async function fetchPredictionsByTicker({
   ticker,
   mode,
 }: GetPredictionByTickerParams): Promise<StockPricePredictionResponse[]> {
+  let url = `${finProcessorUrl}/api/v1/predictions/${ticker}`
+
+  if (mode) {
+    const params = new URLSearchParams(`mode=${mode}`)
+    url = `${url}?${params}`
+  }
+
   const options = {
     method: "GET",
-  }
-  const paramsObject: any = {}
-
-  if (mode) {
-    paramsObject.mode = mode
-  }
-
-  let url = `${finProcessorUrl}/api/v1/predictions/${ticker}`
-  if (mode) {
-    const params = new URLSearchParams(paramsObject)
-    url = `${url}?${params}`
   }
   const apiCall = async () => fetch(url, options)
   return executeCatching(apiCall)
@@ -118,7 +114,7 @@ export async function fetchTopPredictions(): Promise<
     method: "GET",
   }
 
-  let predictionsUrl = `${finProcessorUrl}/api/v1/top/predictions`
+  const predictionsUrl = `${finProcessorUrl}/api/v1/top/predictions`
   const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }
@@ -130,7 +126,7 @@ export async function fetchLossPredictions(): Promise<
     method: "GET",
   }
 
-  let predictionsUrl = `${finProcessorUrl}/api/v1/loss/predictions`
+  const predictionsUrl = `${finProcessorUrl}/api/v1/loss/predictions`
   const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }

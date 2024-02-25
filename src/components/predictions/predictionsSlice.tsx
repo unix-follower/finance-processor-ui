@@ -15,79 +15,84 @@ import ErrorCode from "@/finProcessor/error/ErrorCode"
 
 export interface PredictionStateUpdateAction {
   eventType: PredictionStateUpdateActionType
-  data: any
+  data: StockPricePredictionResponse[]
 }
 
-async function executeCatching<T>(
-  params: any,
-  rejectWithValue: any,
-  fn: (params: any) => Promise<T>,
-  eventType: PredictionStateUpdateActionType,
-): Promise<PredictionStateUpdateAction> {
-  try {
-    const data = await fn(params)
-    return {
-      eventType,
-      data,
-    }
-  } catch (error) {
-    let errorCode = ErrorCode.UNKNOWN
-    if (error instanceof FinProcessorError) {
-      errorCode = error.errorCode
-    }
-    const errorResponse = {
-      eventType: PredictionStateUpdateActionType.SET_ERROR,
-      data: {
-        errorCode,
-      },
-    }
-    return rejectWithValue(errorResponse)
+function createErrorResponse(error: Error) {
+  let errorCode = ErrorCode.UNKNOWN
+  if (error instanceof FinProcessorError) {
+    errorCode = error.errorCode
+  }
+
+  return {
+    eventType: PredictionStateUpdateActionType.SET_ERROR,
+    data: {
+      errorCode,
+    },
   }
 }
 
 export const fetchPredictionsAsyncThunk = createAsyncThunk(
   "predictions/fetchPredictionsAsyncThunk",
-  async (params: GetPredictionsParams, { rejectWithValue }) =>
-    executeCatching(
-      params,
-      rejectWithValue,
-      fetchPredictions,
-      PredictionStateUpdateActionType.SET_PREDICTIONS,
-    ),
+  async (params: GetPredictionsParams, { rejectWithValue }) => {
+    try {
+      const data = await fetchPredictions(params)
+      return {
+        eventType: PredictionStateUpdateActionType.SET_PREDICTIONS,
+        data,
+      }
+    } catch (error) {
+      const errorResponse = createErrorResponse(error as Error)
+      return rejectWithValue(errorResponse)
+    }
+  },
 )
 
 export const fetchPredictionsByTickerAsyncThunk = createAsyncThunk(
   "predictions/fetchPredictionByTickerAsyncThunk",
-  async (params: GetPredictionByTickerParams, { rejectWithValue }) =>
-    executeCatching(
-      params,
-      rejectWithValue,
-      fetchPredictionsByTicker,
-      PredictionStateUpdateActionType.SET_PREDICTION,
-    ),
+  async (params: GetPredictionByTickerParams, { rejectWithValue }) => {
+    try {
+      const data = await fetchPredictionsByTicker(params)
+      return {
+        eventType: PredictionStateUpdateActionType.SET_PREDICTION,
+        data,
+      }
+    } catch (error) {
+      const errorResponse = createErrorResponse(error as Error)
+      return rejectWithValue(errorResponse)
+    }
+  },
 )
 
 export const fetchTopPredictionsAsyncThunk = createAsyncThunk(
   "predictions/fetchTopPredictionsAsyncThunk",
   async (_, { rejectWithValue }) => {
-    return executeCatching(
-      null,
-      rejectWithValue,
-      fetchTopPredictions,
-      PredictionStateUpdateActionType.SET_TOP_PREDICTIONS,
-    )
+    try {
+      const data = await fetchTopPredictions()
+      return {
+        eventType: PredictionStateUpdateActionType.SET_TOP_PREDICTIONS,
+        data,
+      }
+    } catch (error) {
+      const errorResponse = createErrorResponse(error as Error)
+      return rejectWithValue(errorResponse)
+    }
   },
 )
 
 export const fetchLossPredictionsAsyncThunk = createAsyncThunk(
   "predictions/fetchLossPredictionsAsyncThunk",
   async (_, { rejectWithValue }) => {
-    return executeCatching(
-      null,
-      rejectWithValue,
-      fetchLossPredictions,
-      PredictionStateUpdateActionType.SET_LOSS_PREDICTIONS,
-    )
+    try {
+      const data = await fetchLossPredictions()
+      return {
+        eventType: PredictionStateUpdateActionType.SET_LOSS_PREDICTIONS,
+        data,
+      }
+    } catch (error) {
+      const errorResponse = createErrorResponse(error as Error)
+      return rejectWithValue(errorResponse)
+    }
   },
 )
 
@@ -125,28 +130,28 @@ stateHnadlerMap.set(
 )
 stateHnadlerMap.set(
   PredictionStateUpdateActionType.SET_PREDICTION,
-  (state: any, data: StockPricePredictionResponse) => {
+  (state: PredictionsState, data: StockPricePredictionResponse) => {
     state.error = undefined
     state.predictions = [data]
   },
 )
 stateHnadlerMap.set(
   PredictionStateUpdateActionType.SET_PREDICTIONS,
-  (state: any, data: StockPricePredictionResponse[]) => {
+  (state: PredictionsState, data: StockPricePredictionResponse[]) => {
     state.error = undefined
     state.predictions = data
   },
 )
 stateHnadlerMap.set(
   PredictionStateUpdateActionType.SET_TOP_PREDICTIONS,
-  (state: any, data: StockPricePredictionResponse[]) => {
+  (state: PredictionsState, data: StockPricePredictionResponse[]) => {
     state.error = undefined
     state.topPredictions = data
   },
 )
 stateHnadlerMap.set(
   PredictionStateUpdateActionType.SET_LOSS_PREDICTIONS,
-  (state: any, data: StockPricePredictionResponse[]) => {
+  (state: PredictionsState, data: StockPricePredictionResponse[]) => {
     state.error = undefined
     state.lossPredictions = data
   },

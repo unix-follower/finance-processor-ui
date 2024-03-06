@@ -1,7 +1,7 @@
 import React from "react"
 import { useTranslation } from "react-i18next"
 import type { NextPage } from "next"
-import TopPredictionTable from "@/components/topPredictions/TopPredictionTable"
+import LossPredictionTable from "@/components/lossPredictions/LossPredictionTable"
 import Alert from "@mui/material/Alert"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import {
@@ -46,7 +46,7 @@ const LossPredictionsPage: NextPage = () => {
         </Alert>
       )}
       <div className="loss-predictions">
-        <TopPredictionTable loading={loading} />
+        <LossPredictionTable loading={loading} />
       </div>
     </div>
   )

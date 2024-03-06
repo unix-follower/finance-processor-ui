@@ -34,27 +34,32 @@ const PredictionsPage: NextPage = () => {
 
   const predictionState = useAppSelector(getPredictionState)
 
-  async function fetchPredictions(params: GetPredictionsParams) {
-    const response = await dispatch(fetchPredictionsAsyncThunk(params))
-    dispatch(setState(response.payload as PredictionStateUpdateAction))
-  }
-
-  function loadPredictions(params: GetPredictionsParams) {
+  const fetchPredictions = React.useCallback(async (params: GetPredictionsParams) => {
     setLoading(true)
-    return fetchPredictions(params).finally(() => setLoading(false))
-  }
+    try {
+      const response = await dispatch(fetchPredictionsAsyncThunk(params))
+      dispatch(setState(response.payload as PredictionStateUpdateAction))
+    } finally {
+      setLoading(false)
+    }
+  }, [dispatch])
+
+  const loadAllPredictions = React.useCallback(() => {
+    const params = {
+      mode: SearchMode.ALL,
+    }
+
+    fetchPredictions(params)
+  }, [fetchPredictions])
+
+  React.useEffect(() => {
+    loadAllPredictions()
+  }, [loadAllPredictions])
 
   const handleAccordionChange =
     (panel: string) => (_: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false)
     }
-
-  React.useEffect(() => {
-    const params = {
-      mode: SearchMode.ALL,
-    }
-    loadPredictions(params)
-  }, [])
 
   function isShowAlertOnServerError() {
     let isError = false
@@ -86,7 +91,7 @@ const PredictionsPage: NextPage = () => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <AdvancedSearch loading={loading} executeSearchFn={loadPredictions} />
+          <AdvancedSearch loading={loading} executeSearchFn={fetchPredictions} />
         </AccordionDetails>
       </Accordion>
       <Accordion

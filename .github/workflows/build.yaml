@@ -38,23 +38,49 @@ jobs:
 
       - name: Run ESlint
         run: npm run lint
+  
+  run-tests-with-coverage-report:
+    runs-on: ubuntu-latest
+    needs: [run-sanity-check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install dependencies
+        shell: bash
+        run: npm ci
 
       - name: Run tests
         run: npm test
 
-  publish-test-coverage-report:
-    runs-on: ubuntu-latest
-    needs: [run-sanity-check]
-    steps:
       - name: Publish test coverage report
         uses: actions/upload-artifact@v4
         with:
           name: Test coverage report
           path: coverage
 
-  package:
+  package-artifact:
     runs-on: ubuntu-latest
     needs: [run-sanity-check]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install dependencies
+        shell: bash
+        run: npm ci
+
       - name: Build project
         run: npm run build
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .next
+          path: .next

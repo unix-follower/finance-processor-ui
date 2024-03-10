@@ -1,0 +1,13 @@
+networks:
+  mock-server-net:
+
+services:
+  mockserver:
+    image: mockserver/mockserver
+    container_name: fin-processor-mockserver
+    hostname: mockserver
+    restart: "no"
+    ports:
+      - "1080:1080"
+    networks:
+      mock-server-net:

@@ -2,14 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import type { AppState } from "@/store"
 import type GetPredictionsParams from "@/finProcessor/model/GetPredictionsParams"
-import type GetPredictionByTickerParams from "@/finProcessor/model/GetPredictionsByTickerParams"
 import type StockPricePredictionResponse from "@/finProcessor/model/StockPricePredictionResponse"
 import FinProcessorError from "@/finProcessor/error/FinProcessorError"
 import {
   fetchPredictions,
   fetchTopPredictions,
   fetchLossPredictions,
-  fetchPredictionsByTicker,
+  fetchPredictionByTicker,
 } from "@/finProcessor/finProcessorClient"
 import ErrorCode from "@/finProcessor/error/ErrorCode"
 
@@ -48,11 +47,11 @@ export const fetchPredictionsAsyncThunk = createAsyncThunk(
   },
 )
 
-export const fetchPredictionsByTickerAsyncThunk = createAsyncThunk(
+export const fetchPredictionByTickerAsyncThunk = createAsyncThunk(
   "predictions/fetchPredictionByTickerAsyncThunk",
-  async (params: GetPredictionByTickerParams, { rejectWithValue }) => {
+  async (ticker: string, { rejectWithValue }) => {
     try {
-      const data = await fetchPredictionsByTicker(params)
+      const data = await fetchPredictionByTicker(ticker)
       return {
         eventType: PredictionStateUpdateActionType.SET_PREDICTION,
         data,

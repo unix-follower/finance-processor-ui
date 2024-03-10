@@ -5,9 +5,12 @@ import ErrorCode from "./error/ErrorCode"
 import FinProcessorError from "./error/FinProcessorError"
 import SearchMode from "./model/SearchMode"
 
-const finProcessorUrl = process.env.NEXT_PUBLIC_FIN_PROCESSOR_URL
-if (!finProcessorUrl) {
-  throw new Error("env variable NEXT_PUBLIC_FIN_PROCESSOR_URL is not set")
+function getBackendURL() {
+  const finProcessorUrl = process.env.NEXT_PUBLIC_FIN_PROCESSOR_URL
+  if (!finProcessorUrl) {
+    throw new Error("env variable NEXT_PUBLIC_FIN_PROCESSOR_URL is not set")
+  }
+  return finProcessorUrl
 }
 
 const NOT_FOUND_HTTP_STATUS_CODE = 404
@@ -60,7 +63,7 @@ export async function fetchPredictions({
   }
   let paramsString: string | undefined
 
-  let predictionsUrl = `${finProcessorUrl}/api/v1/predictions`
+  let predictionsUrl = `${getBackendURL()}/api/v1/predictions`
 
   if (mode) {
     paramsString = `mode=${mode.toString()}`
@@ -93,7 +96,7 @@ export async function fetchPredictionsByTicker({
   ticker,
   mode,
 }: GetPredictionByTickerParams): Promise<StockPricePredictionResponse[]> {
-  let url = `${finProcessorUrl}/api/v1/predictions/${ticker}`
+  let url = `${getBackendURL()}/api/v1/predictions/${ticker}`
 
   if (mode) {
     const params = new URLSearchParams(`mode=${mode}`)
@@ -114,7 +117,7 @@ export async function fetchTopPredictions(): Promise<
     method: "GET",
   }
 
-  const predictionsUrl = `${finProcessorUrl}/api/v1/top/predictions`
+  const predictionsUrl = `${getBackendURL()}/api/v1/top/predictions`
   const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }
@@ -126,7 +129,7 @@ export async function fetchLossPredictions(): Promise<
     method: "GET",
   }
 
-  const predictionsUrl = `${finProcessorUrl}/api/v1/loss/predictions`
+  const predictionsUrl = `${getBackendURL()}/api/v1/loss/predictions`
   const apiCall = async () => fetch(predictionsUrl, options)
   return executeCatching(apiCall)
 }

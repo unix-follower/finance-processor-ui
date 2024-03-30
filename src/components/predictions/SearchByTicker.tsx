@@ -5,10 +5,9 @@ import TextField from "@mui/material/TextField"
 import {
   PredictionStateUpdateAction,
   setState,
-  fetchPredictionsByTickerAsyncThunk,
+  fetchPredictionByTickerAsyncThunk,
 } from "@/components/predictions/predictionsSlice"
 import { useAppDispatch } from "@/hooks"
-import type GetPredictionsByTickerParams from "@/finProcessor/model/GetPredictionsByTickerParams"
 import SearchButton from "./SearchButton"
 import "./SearchByTicker.css"
 
@@ -40,11 +39,8 @@ export default function SearchByTicker({ loading, setLoadingFn }: Props) {
       return Promise.reject()
     }
 
-    const params = {
-      ticker,
-    }
     setLoadingFn(true)
-    return fetchPredictionsByTicker(params).finally(() => setLoadingFn(false))
+    return fetchPredictionByTicker(ticker).finally(() => setLoadingFn(false))
   }
 
   function handleKeyDownOfSearchByTicker(event: React.KeyboardEvent) {
@@ -53,10 +49,8 @@ export default function SearchByTicker({ loading, setLoadingFn }: Props) {
     }
   }
 
-  async function fetchPredictionsByTicker(
-    params: GetPredictionsByTickerParams,
-  ) {
-    const response = await dispatch(fetchPredictionsByTickerAsyncThunk(params))
+  async function fetchPredictionByTicker(ticker: string) {
+    const response = await dispatch(fetchPredictionByTickerAsyncThunk(ticker))
     dispatch(setState(response.payload as PredictionStateUpdateAction))
   }
 

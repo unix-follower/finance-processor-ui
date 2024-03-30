@@ -22,7 +22,7 @@ import SearchByTicker from "@/components/predictions/SearchByTicker"
 import "./predictions.css"
 import ErrorCode from "@/finProcessor/error/ErrorCode"
 
-const errorSkipList = [ErrorCode.NOT_FOUND]
+const errorSkipList = [ErrorCode.TICKER_NOT_FOUND]
 
 const PredictionsPage: NextPage = () => {
   const dispatch = useAppDispatch()
@@ -34,15 +34,18 @@ const PredictionsPage: NextPage = () => {
 
   const predictionState = useAppSelector(getPredictionState)
 
-  const fetchPredictions = React.useCallback(async (params: GetPredictionsParams) => {
-    setLoading(true)
-    try {
-      const response = await dispatch(fetchPredictionsAsyncThunk(params))
-      dispatch(setState(response.payload as PredictionStateUpdateAction))
-    } finally {
-      setLoading(false)
-    }
-  }, [dispatch])
+  const fetchPredictions = React.useCallback(
+    async (params: GetPredictionsParams) => {
+      setLoading(true)
+      try {
+        const response = await dispatch(fetchPredictionsAsyncThunk(params))
+        dispatch(setState(response.payload as PredictionStateUpdateAction))
+      } finally {
+        setLoading(false)
+      }
+    },
+    [dispatch],
+  )
 
   const loadAllPredictions = React.useCallback(() => {
     const params = {
@@ -91,7 +94,10 @@ const PredictionsPage: NextPage = () => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <AdvancedSearch loading={loading} executeSearchFn={fetchPredictions} />
+          <AdvancedSearch
+            loading={loading}
+            executeSearchFn={fetchPredictions}
+          />
         </AccordionDetails>
       </Accordion>
       <Accordion

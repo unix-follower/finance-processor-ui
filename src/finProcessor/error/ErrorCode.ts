@@ -1,7 +1,7 @@
 enum ErrorCode {
-  UNKNOWN = "UNKNOWN",
-  NOT_FOUND = "NOT_FOUND",
-  CONNECTION_REFUSED = "CONNECTION_REFUSED",
+  CONNECTION_REFUSED = -1,
+  UNKNOWN = 0,
+  TICKER_NOT_FOUND = 1,
 }
 
 export default ErrorCode

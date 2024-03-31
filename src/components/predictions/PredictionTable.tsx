@@ -7,9 +7,13 @@ import "./PredictionTable.css"
 
 interface Props {
   loading: boolean
+  virtualizationEnabled?: boolean | undefined
 }
 
-export default function PredictionTable({ loading }: Props) {
+export default function PredictionTable({
+  loading,
+  virtualizationEnabled,
+}: Props) {
   const { t } = useTranslation()
 
   const { predictions, error } = useAppSelector(getPredictionState)
@@ -56,8 +60,12 @@ export default function PredictionTable({ loading }: Props) {
     })
   }
 
+  const isVirtualizationDisabled =
+    virtualizationEnabled === undefined ? false : !virtualizationEnabled
+
   return (
     <DataGrid
+      disableVirtualization={isVirtualizationDisabled}
       className="prediction-table"
       loading={loading}
       localeText={{

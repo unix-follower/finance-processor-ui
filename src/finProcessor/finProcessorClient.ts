@@ -83,7 +83,9 @@ export async function fetchPredictions({
   return executeCatching(apiCall)
 }
 
-export async function fetchPredictionByTicker(ticker: string): Promise<StockPricePredictionResponse[]> {
+export async function fetchPredictionByTicker(
+  ticker: string,
+): Promise<StockPricePredictionResponse[]> {
   const url = `${getBackendURL()}/api/v1/predictions/${ticker}`
 
   const options = {

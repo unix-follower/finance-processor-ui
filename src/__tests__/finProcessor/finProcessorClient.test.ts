@@ -15,7 +15,6 @@ describe("finProcessorClient", () => {
   }
 
   beforeEach(() => {
-    jest.resetModules()
     process.env = {
       ...ORIGINAL_ENV,
       NEXT_PUBLIC_FIN_PROCESSOR_URL: FIN_PROCESSOR_URL,
@@ -26,7 +25,7 @@ describe("finProcessorClient", () => {
     process.env = ORIGINAL_ENV
   })
 
-  it("test invalid config - server URL is not set", async () => {
+  test("invalid config - server URL is not set", async () => {
     // given
     delete process.env.NEXT_PUBLIC_FIN_PROCESSOR_URL
 
@@ -35,7 +34,9 @@ describe("finProcessorClient", () => {
       await finProcessorClient.fetchPredictionByTicker("VOO")
     } catch (error) {
       // then
-      expect(error.message).toBe("env variable NEXT_PUBLIC_FIN_PROCESSOR_URL is not set")
+      expect(error.message).toBe(
+        "env variable NEXT_PUBLIC_FIN_PROCESSOR_URL is not set",
+      )
     }
   })
 
@@ -50,7 +51,7 @@ describe("finProcessorClient", () => {
     return fetchMock
   }
 
-  it("test fetchPredictions with search mode = all", async () => {
+  test("fetchPredictions with search mode = all", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -69,7 +70,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictions with search mode = range and without from and to", async () => {
+  test("fetchPredictions with search mode = range and without from and to", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -88,7 +89,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictions with search mode = range", async () => {
+  test("fetchPredictions with search mode = range", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -109,7 +110,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictions with search mode = reverseRange and without from and to", async () => {
+  test("fetchPredictions with search mode = reverseRange and without from and to", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -128,7 +129,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictions with search mode = reverseRange", async () => {
+  test("fetchPredictions with search mode = reverseRange", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -149,7 +150,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictions with search mode = prefixScan", async () => {
+  test("fetchPredictions with search mode = prefixScan", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -169,7 +170,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchTopPredictions", async () => {
+  test("fetchTopPredictions", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -186,7 +187,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchLossPredictions", async () => {
+  test("fetchLossPredictions", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
@@ -203,29 +204,30 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it.each([
-    [ErrorCode[ErrorCode.UNKNOWN], ErrorCode.UNKNOWN],
-  ])("test fetchPredictions with search mode = all and the error code is %s", async (_: string, errorCode: ErrorCode) => {
-    // given
-    const fetchMock = jest.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ errorCode }),
-      }),
-    )
-    global.fetch = fetchMock as jest.Mock
-    
-    try {
-      // when
-      await finProcessorClient.fetchPredictions({ mode: SearchMode.ALL })
-    } catch (error) {
-      // then
-      const finProcessorError = error as FinProcessorError
-      expect(finProcessorError.errorCode).toBe(errorCode)
-    }
-  })
+  test.each([[ErrorCode[ErrorCode.UNKNOWN], ErrorCode.UNKNOWN]])(
+    "fetchPredictions with search mode = all and the error code is %s",
+    async (_: string, errorCode: ErrorCode) => {
+      // given
+      const fetchMock = jest.fn(() =>
+        Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve({ errorCode }),
+        }),
+      )
+      global.fetch = fetchMock as jest.Mock
 
-  it("test fetchPredictions with search mode = all and there is a connection refused error", async () => {
+      try {
+        // when
+        await finProcessorClient.fetchPredictions({ mode: SearchMode.ALL })
+      } catch (error) {
+        // then
+        const finProcessorError = error as FinProcessorError
+        expect(finProcessorError.errorCode).toBe(errorCode)
+      }
+    },
+  )
+
+  test("fetchPredictions with search mode = all and there is a connection refused error", async () => {
     // given
     const fetchMock = jest.fn(() =>
       Promise.resolve({
@@ -234,7 +236,7 @@ describe("finProcessorClient", () => {
       }),
     )
     global.fetch = fetchMock as jest.Mock
-    
+
     try {
       // when
       await finProcessorClient.fetchPredictions({ mode: SearchMode.ALL })
@@ -248,13 +250,15 @@ describe("finProcessorClient", () => {
     }
   })
 
-  it("test fetchPredictionByTicker", async () => {
+  test("fetchPredictionByTicker", async () => {
     // given
     const voo = factory.createVOO20240221()
     const fetchMock = setupFetchMock([voo])
 
     // when
-    const searchResult = await finProcessorClient.fetchPredictionByTicker(voo.ticker)
+    const searchResult = await finProcessorClient.fetchPredictionByTicker(
+      voo.ticker,
+    )
 
     // then
     expect(searchResult).toHaveLength(1)
@@ -265,7 +269,7 @@ describe("finProcessorClient", () => {
     expect(fetchMock).toHaveBeenCalledWith(expectedUrl, getMethodOptions)
   })
 
-  it("test fetchPredictionByTicker with search mode = all and there is a TICKER_NOT_FOUND error", async () => {
+  test("fetchPredictionByTicker with search mode = all and there is a TICKER_NOT_FOUND error", async () => {
     // given
     const errorCode = ErrorCode.TICKER_NOT_FOUND
     const fetchMock = jest.fn(() =>
@@ -275,7 +279,7 @@ describe("finProcessorClient", () => {
       }),
     )
     global.fetch = fetchMock as jest.Mock
-    
+
     try {
       // when
       await finProcessorClient.fetchPredictionByTicker("VOO")

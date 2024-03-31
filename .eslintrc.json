@@ -1,4 +1,5 @@
 {
+  "plugins": ["testing-library", "jest-dom"],
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended",
@@ -11,6 +12,7 @@
     "plugin:react-hooks/recommended",
     "plugin:styled-components-a11y/recommended",
     "prettier",
-    "plugin:json-schema-validator/recommended"
+    "plugin:json-schema-validator/recommended",
+    "plugin:testing-library/react"
   ]
 }
